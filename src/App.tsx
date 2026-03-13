@@ -1,0 +1,43 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster as Sonner } from "./components/ui/sonner";
+
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import CreateIncident from "./pages/CreateIncident";
+import IncidentDetail from "./pages/IncidentDetail";
+import OfficialPanel from "./pages/OfficialPanel";
+import AdminPanel from "./pages/AdminPanel";
+import DesignSystem from "./pages/DesignSystem";
+import NotFound from "./pages/NotFound";
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/crear-incidencia" element={<CreateIncident />} />
+          <Route path="/incidencia/:id" element={<IncidentDetail />} />
+          <Route path="/funcionario" element={<OfficialPanel />} />
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/design-system" element={<DesignSystem />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
+
+export default App;
