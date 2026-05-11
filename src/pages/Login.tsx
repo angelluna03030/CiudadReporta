@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { loginUser } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +11,29 @@ import { MapPin, Mail, Lock, ArrowRight } from "lucide-react";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+const handleLogin = async () => {
+  try {
+    const response = await loginUser({
+      email,
+      password,
+    });
+
+    console.log(response);
+
+    alert("Login exitoso");
+
+    navigate("/dashboard");
+  } catch (error: any) {
+    console.error(error);
+
+    alert(
+      error?.response?.data?.message ||
+      "Error al iniciar sesión"
+    );
+  }
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -39,12 +64,14 @@ export default function Login() {
                 <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" />
               </div>
             </div>
-            <Link to="/dashboard">
-              <Button variant="hero" className="w-full mt-2">
+           <Button
+            variant="hero"
+            className="w-full mt-2"
+            onClick={handleLogin}
+               >
                 Iniciar sesión
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-            </Link>
             <div className="text-center text-sm text-muted-foreground">
               ¿No tienes cuenta?{" "}
               <Link to="/registro" className="text-primary hover:underline font-medium">Regístrate</Link>
