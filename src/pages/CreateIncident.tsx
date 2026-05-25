@@ -30,6 +30,37 @@ export default function CreateIncident() {
     (step === 2 && address) ||
     (step === 3 && description);
 
+    const handleSubmit = async () => {
+  const token = localStorage.getItem("token");
+
+  const incident = {
+    title: incidentTypes.find(t => t.id === selectedType)?.label,
+    description: description,
+    categoryId: selectedType,
+    stateId: "OPEN",
+    addressId: address,
+    priorityId: "HIGH",
+  };
+
+  try {
+    const response = await fetch("http://localhost:8081/incidents", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
+      body: JSON.stringify(incident),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al crear la incidencia");
+    }
+
+    setSubmitted(true);
+  } catch (error) {
+    console.error("Error al crear la incidencia:", error);
+  }
+  };
   if (submitted) {
     return (
       <AppLayout title="Incidencia creada">
@@ -185,7 +216,7 @@ export default function CreateIncident() {
               Siguiente <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
-            <Button variant="hero" onClick={() => setSubmitted(true)}>
+            <Button variant="hero" onClick={handleSubmit}>  
               Enviar reporte <CheckCircle2 className="ml-2 h-4 w-4" />
             </Button>
           )}
