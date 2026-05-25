@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { registerUser } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,30 +10,41 @@ import { MapPin, Mail, Lock, User, ArrowRight } from "lucide-react";
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");const navigate = useNavigate();
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const navigate = useNavigate();
 
-const handleRegister = async () => {
-  try {
-    const response = await registerUser({
-      name,
-      email,
-      password,
-    });
+  const userData = {
+    username: name,
+    email: email,
+    password: password,
+    phone: phone,
+  }  
 
-    console.log(response);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    alert("Usuario registrado correctamente");
+    try{
+      const response = await fetch("http://localhost:8081/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
 
-    navigate("/login");
-  } catch (error: any) {
-    console.error(error);
+      if (!response.ok){
+        throw new Error("Error al registrar el usuario");
+      }else{
+        const data = await response.json();
+        localStorage.setItem("token", data.token);
+        navigate("/dashboard");
+      }
 
-    alert(
-      error?.response?.data?.message ||
-      "Error al registrar usuario"
-    );
+    }catch(error){
+      console.error("Error al registrar el usuario:", error);
+    }
   }
-};
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -72,11 +82,14 @@ const handleRegister = async () => {
                 <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" />
               </div>
             </div>
-            <Button
-              variant="hero"
-              className="w-full mt-2"
-              onClick={handleRegister}
-              >
+            <div className="space-y-2">
+              <Label htmlFor="phone">Teléfono</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input id="phone" type="tel" placeholder="tu teléfono" value={phone} onChange={e => setPhone(e.target.value)} className="pl-10" />
+              </div>
+            </div>
+              <Button onClick={handleSubmit} variant="hero" className="w-full mt-2">
                 Crear cuenta
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
