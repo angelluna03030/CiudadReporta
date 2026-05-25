@@ -55,9 +55,19 @@ export default function Landing() {
             <a href="#estadisticas" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Estadísticas
             </a>
-            <Link to="/login">
-              <Button variant="ghost" size="sm">Iniciar sesión</Button>
-            </Link>
+            {localStorage.getItem("token") ? (
+              <Link to="/dashboard">
+                <Button variant="outline" size="lg" className="text-base">
+                  Ir al dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <Button variant="outline" size="lg" className="text-base">
+                  Iniciar sesión
+                </Button>
+              </Link>
+            )}
             <Link to="/dashboard">
               <Button variant="hero" size="sm">
                 Reportar incidencia
@@ -89,11 +99,19 @@ export default function Landing() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link to="/login">
-                <Button variant="outline" size="lg" className="text-base">
-                  Iniciar sesión
-                </Button>
-              </Link>
+              {localStorage.getItem("token") ? (
+                <Link to="/dashboard">
+                  <Button variant="outline" size="lg" className="text-base">
+                    Ir al dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/login">
+                  <Button variant="outline" size="lg" className="text-base">
+                    Iniciar sesión
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
           <div className="animate-fade-in [animation-delay:200ms] opacity-0">

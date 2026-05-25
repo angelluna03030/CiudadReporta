@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,36 @@ import { MapPin, Mail, Lock, ArrowRight } from "lucide-react";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const userData = {
+    email: email,
+    password: password,
+  }
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:8081/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      })
+
+      if (!response.ok){
+        throw new Error("Error al iniciar sesión");
+      }else{
+        const data = await response.json();
+        localStorage.setItem("token", data.token);
+        navigate("/dashboard");
+      }
+    }catch (error) {
+      console.error("Error al iniciar sesión:", error);
+    }
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -39,12 +70,10 @@ export default function Login() {
                 <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" />
               </div>
             </div>
-            <Link to="/dashboard">
-              <Button variant="hero" className="w-full mt-2">
-                Iniciar sesión
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            <Button variant="hero" className="w-full mt-2" onClick={handleLogin}>
+              Iniciar sesión
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
             <div className="text-center text-sm text-muted-foreground">
               ¿No tienes cuenta?{" "}
               <Link to="/registro" className="text-primary hover:underline font-medium">Regístrate</Link>

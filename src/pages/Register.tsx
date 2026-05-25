@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,40 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const navigate = useNavigate();
+
+  const userData = {
+    username: name,
+    email: email,
+    password: password,
+    phone: phone,
+  }  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try{
+      const response = await fetch("http://localhost:8081/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok){
+        throw new Error("Error al registrar el usuario");
+      }else{
+        const data = await response.json();
+        localStorage.setItem("token", data.token);
+        navigate("/dashboard");
+      }
+
+    }catch(error){
+      console.error("Error al registrar el usuario:", error);
+    }
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -47,12 +82,17 @@ export default function Register() {
                 <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" />
               </div>
             </div>
-            <Link to="/dashboard">
-              <Button variant="hero" className="w-full mt-2">
+            <div className="space-y-2">
+              <Label htmlFor="phone">Teléfono</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input id="phone" type="tel" placeholder="tu teléfono" value={phone} onChange={e => setPhone(e.target.value)} className="pl-10" />
+              </div>
+            </div>
+              <Button onClick={handleSubmit} variant="hero" className="w-full mt-2">
                 Crear cuenta
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-            </Link>
             <div className="text-center text-sm text-muted-foreground">
               ¿Ya tienes cuenta?{" "}
               <Link to="/login" className="text-primary hover:underline font-medium">Inicia sesión</Link>
