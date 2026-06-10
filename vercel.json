@@ -1,20 +1,8 @@
 {
   "rewrites": [
-    {
-      "source": "/auth/(.*)",
-      "destination": "https://proyecto-integrador-3-i4cy.onrender.com/auth/$1"
-    },
-    {
-      "source": "/incidents",
-      "destination": "https://proyecto-integrador-3-i4cy.onrender.com/incidents"
-    },
-    {
-      "source": "/incidents/(.*)",
-      "destination": "https://proyecto-integrador-3-i4cy.onrender.com/incidents/$1"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "https://proyecto-integrador-3-i4cy.onrender.com/api/$1"
-    }
+    { "source": "/auth/(.*)", "destination": "https://proyecto-integrador-3-i4cy.onrender.com/auth/$1" },
+    { "source": "/incidents", "destination": "https://proyecto-integrador-3-i4cy.onrender.com/incidents" },
+    { "source": "/incidents/(.*)", "destination": "https://proyecto-integrador-3-i4cy.onrender.com/incidents/$1" },
+    { "source": "/api/(.*)", "destination": "https://proyecto-integrador-3-i4cy.onrender.com/api/$1" }
   ]
 }
