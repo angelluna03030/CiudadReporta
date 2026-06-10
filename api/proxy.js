@@ -1,16 +1,29 @@
 const BACKEND = "https://proyecto-integrador-3-i4cy.onrender.com";
 
+function getBody(req) {
+  return new Promise((resolve) => {
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => resolve(body));
+  });
+}
+
 export default async function handler(req, res) {
   const path = req.url;
 
-  const headers = {};
-  for (const [key, value] of Object.entries(req.headers)) {
-    const k = key.toLowerCase();
-    if (k !== "host" && k !== "x-forwarded-host") {
-      headers[k] = value;
-    }
+  if (req.method === "OPTIONS") {
+    res.statusCode = 204;
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.end();
+    return;
   }
-  headers["origin"] = "http://localhost:5173";
+
+  const headers = { ...req.headers };
+  delete headers.host;
+  delete headers["x-forwarded-host"];
+  headers.origin = "http://localhost:5173";
 
   const options = {
     method: req.method,
@@ -18,19 +31,20 @@ export default async function handler(req, res) {
   };
 
   if (req.method !== "GET" && req.method !== "HEAD") {
-    options.body = await req.text();
+    options.body = await getBody(req);
   }
 
   try {
     const response = await fetch(`${BACKEND}${path}`, options);
     const body = await response.text();
 
-    res.status(response.status);
+    res.statusCode = response.status;
     for (const [key, value] of response.headers) {
       res.setHeader(key, value);
     }
-    res.send(body);
+    res.end(body);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.statusCode = 500;
+    res.end(error.message);
   }
 }
