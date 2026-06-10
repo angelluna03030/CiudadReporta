@@ -1,6 +1,6 @@
 const BACKEND = "https://proyecto-integrador-3-i4cy.onrender.com";
 
-export default function middleware(request: Request) {
+export default async function middleware(request) {
   const url = new URL(request.url);
 
   if (
@@ -10,15 +10,22 @@ export default function middleware(request: Request) {
   ) {
     const headers = new Headers(request.headers);
     headers.set("Origin", "http://localhost:5173");
+    headers.set("X-Forwarded-For", "");
+    headers.delete("X-Forwarded-For");
 
-    return fetch(`${BACKEND}${url.pathname}${url.search}`, {
+    let body = null;
+    if (request.body) {
+      body = await request.text();
+    }
+
+    return fetch(BACKEND + url.pathname + url.search, {
       method: request.method,
       headers,
-      body: request.body,
+      body,
     });
   }
 }
 
 export const config = {
-  matcher: ["/auth/:path*", "/incidents/:path*", "/incidents", "/api/:path*"],
+  matcher: ["/auth/:path*", "/incidents", "/incidents/:path*", "/api/:path*"],
 };
