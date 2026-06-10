@@ -49,9 +49,10 @@ export default function CreateIncident() {
       priorityId: "HIGH",
     };
 
+    const BASE_URL = import.meta.env.PROD ? "" : import.meta.env.VITE_API_URL;
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/incidents`,
+        `${BASE_URL}/incidents`,
         {
           method: "POST",
           headers: {

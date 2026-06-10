@@ -57,7 +57,8 @@ export default function Dashboard() {
       return;
     }
 
-    fetch(`${import.meta.env.VITE_API_URL}/incidents`, {
+    const BASE_URL = import.meta.env.PROD ? "" : import.meta.env.VITE_API_URL;
+    fetch(`${BASE_URL}/incidents`, {
       method: "GET",
       headers: {
         "Authorization": "Bearer " + token,
