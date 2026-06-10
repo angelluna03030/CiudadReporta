@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { mockIncidents } from "@/lib/mock-data";
@@ -33,6 +35,15 @@ const summaryCards = [
 ];
 
 export default function AdminPanel() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
   return (
     <AppLayout title="Panel de Administrador">
       <div className="space-y-6">

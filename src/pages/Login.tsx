@@ -5,20 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { MapPin, Mail, Lock, ArrowRight } from "lucide-react";
+import { MapPin, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
-  const userData = {
-    email: email,
-    password: password,
-  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       const BASE_URL = import.meta.env.PROD ? "" : import.meta.env.VITE_API_URL;
@@ -27,18 +26,20 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify({ email, password }),
       })
 
       if (!response.ok){
-        throw new Error("Error al iniciar sesión");
+        throw new Error("Credenciales inválidas");
       }else{
         const data = await response.json();
         localStorage.setItem("token", data.token);
         navigate("/dashboard");
       }
     }catch (error) {
-      console.error("Error al iniciar sesión:", error);
+      setError(error.message || "Error al iniciar sesión");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -71,9 +72,15 @@ export default function Login() {
                 <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" />
               </div>
             </div>
-            <Button variant="hero" className="w-full mt-2" onClick={handleLogin}>
-              Iniciar sesión
-              <ArrowRight className="ml-2 h-4 w-4" />
+            {error && (
+              <div className="bg-destructive/10 text-destructive text-sm rounded-md px-3 py-2">
+                {error}
+              </div>
+            )}
+            <Button variant="hero" className="w-full mt-2" onClick={handleLogin} disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+              {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               ¿No tienes cuenta?{" "}

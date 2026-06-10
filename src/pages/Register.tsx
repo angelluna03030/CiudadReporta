@@ -5,24 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { MapPin, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { MapPin, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
-  const userData = {
-    username: name,
-    email: email,
-    password: password,
-    phone: phone,
-  }  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try{
       const BASE_URL = import.meta.env.PROD ? "" : import.meta.env.VITE_API_URL;
@@ -31,7 +28,12 @@ export default function Register() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify({
+          username: name,
+          email,
+          password,
+          phone,
+        }),
       });
 
       if (!response.ok){
@@ -43,7 +45,9 @@ export default function Register() {
       }
 
     }catch(error){
-      console.error("Error al registrar el usuario:", error);
+      setError(error.message || "Error al registrar el usuario");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -90,9 +94,15 @@ export default function Register() {
                 <Input id="phone" type="tel" placeholder="tu teléfono" value={phone} onChange={e => setPhone(e.target.value)} className="pl-10" />
               </div>
             </div>
-              <Button onClick={handleSubmit} variant="hero" className="w-full mt-2">
-                Crear cuenta
-                <ArrowRight className="ml-2 h-4 w-4" />
+            {error && (
+              <div className="bg-destructive/10 text-destructive text-sm rounded-md px-3 py-2">
+                {error}
+              </div>
+            )}
+              <Button onClick={handleSubmit} variant="hero" className="w-full mt-2" disabled={loading}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                {loading ? "Creando cuenta..." : "Crear cuenta"}
+                {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
               </Button>
             <div className="text-center text-sm text-muted-foreground">
               ¿Ya tienes cuenta?{" "}
